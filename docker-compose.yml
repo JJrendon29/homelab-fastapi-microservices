@@ -1,0 +1,37 @@
+services:
+  # 1. Tu aplicación Python
+  api:
+    build: ./api
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./api:/app  # ¡La magia! Conecta tu carpeta con el contenedor en tiempo real
+    command: fastapi dev main.py --host 0.0.0.0 --port 8000 # Activa la recarga automática
+    environment:
+      - DATABASE_URL=postgresql://admin:superseguro123@db:5432/miapp
+      - REDIS_URL=redis://cache:6379/0
+    depends_on:
+      - db
+      - cache
+      
+  # 2. Base de datos PostgreSQL
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: superseguro123
+      POSTGRES_DB: miapp
+    ports:
+      - "5432:5432" # Expuesto para que puedas conectarte desde tu PC principal
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  # 3. Caché Redis
+  cache:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
+# Definimos el volumen para no perder datos si borramos el contenedor
+volumes:
+  postgres_data:
