@@ -4,4 +4,3 @@ __pycache__/
 
 # Ignorar variables de entorno (por si en el futuro usas un archivo .env)
 .env
-.env.example
